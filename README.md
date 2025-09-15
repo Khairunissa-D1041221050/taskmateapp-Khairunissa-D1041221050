@@ -3,4 +3,7 @@
 # Identitas Mahasiswa
 - Nama : Khairunissa
 - NIM : D1041221050
-- 
+
+
+# 15 Sept 2025
+- Install AsyncStorage, datetimepicker

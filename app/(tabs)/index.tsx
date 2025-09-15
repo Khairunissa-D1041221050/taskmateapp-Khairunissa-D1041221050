@@ -1,30 +1,28 @@
-import { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, FlatList, View, TouchableOpacity } from 'react-native';
-import TaskItem from '../../src/components/TaskItem';
-import { dummyTasks } from '../../src/data/dummyTasks';
-import { Task } from '../../src/types/task';
+import { useContext, useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  FlatList,
+  View,
+  TouchableOpacity,
+} from "react-native";
+import { TaskContext } from "@/context/TaskContext";
+import TaskItem from "../../src/components/TaskItem";
+import { Task } from "../../src/types/task";
 
-const filters = ['All', 'Todo', 'Done'] as const;
+const filters = ["All", "Pending", "Todo", "Done"] as const;
 type FilterType = typeof filters[number];
 
 export default function HomeScreen() {
-  const [tasks, setTasks] = useState<Task[]>(dummyTasks);
-  const [filter, setFilter] = useState<FilterType>('All');
-
-  const handleToggle = (task: Task) => {
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === task.id
-          ? { ...t, status: t.status === 'done' ? 'pending' : 'done' }
-          : t
-      )
-    );
-  };
+  const { tasks, toggleTask, deleteTask } = useContext(TaskContext);
+  const [filter, setFilter] = useState<FilterType>("All");
 
   const filteredTasks = tasks.filter((task) => {
-    if (filter === 'All') return true;
-    if (filter === 'Todo') return task.status === 'pending';
-    if (filter === 'Done') return task.status === 'done';
+    if (filter === "All") return true;
+    if (filter === "Pending") return task.status === "pending";
+    if (filter === "Todo") return task.status === "todo";
+    if (filter === "Done") return task.status === "done";
     return true;
   });
 
@@ -40,7 +38,9 @@ export default function HomeScreen() {
             style={[styles.filterButton, filter === f && styles.filterActive]}
             onPress={() => setFilter(f)}
           >
-            <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>
+            <Text
+              style={[styles.filterText, filter === f && styles.filterTextActive]}
+            >
               {f}
             </Text>
           </TouchableOpacity>
@@ -52,7 +52,11 @@ export default function HomeScreen() {
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => (
-          <TaskItem task={item} onToggle={handleToggle} />
+          <TaskItem
+            task={item}
+            onToggle={() => toggleTask(item)}
+            onDelete={() => deleteTask(item)}
+          />
         )}
       />
     </SafeAreaView>
@@ -60,11 +64,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
-  header: { fontSize: 20, fontWeight: '700', padding: 16 },
+  container: { flex: 1, backgroundColor: "#f8fafc" },
+  header: { fontSize: 20, fontWeight: "700", padding: 16 },
   filterRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     paddingVertical: 8,
     gap: 10,
   },
@@ -73,18 +77,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#cbd5e1',
+    borderColor: "#cbd5e1",
   },
   filterActive: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: "#3b82f6",
+    borderColor: "#3b82f6",
   },
   filterText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#334155',
+    fontWeight: "600",
+    color: "#334155",
   },
   filterTextActive: {
-    color: '#fff',
+    color: "#fff",
   },
 });

@@ -1,8 +1,10 @@
-export interface Task {
+export type TaskStatus = 'pending' | 'todo' | 'done';
+
+export type Task = {
   id: number;
   title: string;
-  status: 'pending' | 'done';
   description: string;
+  deadline: string;   // pakai string supaya gampang disimpan di AsyncStorage
   category: string;
-  deadline: string;
-}
+  status: TaskStatus;
+};

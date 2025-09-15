@@ -1,78 +1,55 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Task } from '../types/task';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Task } from "../types/task";
 
 interface TaskItemProps {
   task: Task;
-  onToggle?: (task: Task) => void;
+  onToggle: (task: Task) => void;
+  onDelete?: (task: Task) => void; // opsional
 }
 
-const categoryColors: Record<string, string> = {
-  Mobile: '#3b82f6', // biru
-  RPL: '#10b981',    // hijau
-  IoT: '#f59e0b',    // oranye
-};
-
-export default function TaskItem({ task, onToggle }: TaskItemProps) {
-  const isDone = task.status === 'done';
-  const categoryColor = categoryColors[task.category] || '#94a3b8';
-
+export default function TaskItem({ task, onToggle, onDelete }: TaskItemProps) {
   return (
-    <TouchableOpacity onPress={() => onToggle?.(task)} activeOpacity={0.7}>
-      <View style={[styles.card, isDone && styles.cardDone]}>
-        <View style={{ flex: 1 }}>
-          <Text style={[styles.title, isDone && styles.strike]}>
-            {task.title}
-          </Text>
-          <Text style={styles.desc}>{task.description}</Text>
-          <Text style={styles.meta}>
-            {task.category} • Due {task.deadline}
-          </Text>
-        </View>
-        <View
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => onToggle(task)}>
+        <Text
           style={[
-            styles.badge,
-            { backgroundColor: categoryColor },
+            styles.text,
+            task.status === "done" && styles.completed, // coret kalau selesai
           ]}
         >
-          <Text style={[styles.badgeText, { color: '#fff' }]}>
-            {task.category}
-          </Text>
-        </View>
-        <View
-          style={[
-            styles.badge,
-            isDone ? styles.badgeDone : styles.badgePending,
-          ]}
-        >
-          <Text style={styles.badgeText}>{isDone ? 'Done' : 'Todo'}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
+          {task.title}
+        </Text>
+      </TouchableOpacity>
+
+      {onDelete && (
+        <TouchableOpacity onPress={() => onDelete(task)}>
+          <Text style={styles.delete}>❌</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 1,
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: "#e2e8f0",
   },
-  cardDone: { backgroundColor: '#f1f5f9' },
-  title: { fontSize: 16, fontWeight: '600', marginBottom: 4 },
-  strike: { textDecorationLine: 'line-through', color: '#64748b' },
-  desc: { color: '#475569', marginBottom: 6 },
-  meta: { fontSize: 12, color: '#64748b' },
-  badge: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginLeft: 12,
+  text: {
+    fontSize: 16,
+    color: "#1e293b",
   },
-  badgePending: { backgroundColor: '#fee2e2' },
-  badgeDone: { backgroundColor: '#22c55e' },
-  badgeText: { fontWeight: '700', fontSize: 12 },
+  completed: {
+    textDecorationLine: "line-through",
+    color: "#94a3b8",
+  },
+  delete: {
+    fontSize: 18,
+    color: "red",
+    marginLeft: 10,
+  },
 });
